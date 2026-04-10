@@ -2,151 +2,82 @@ import streamlit as st
 from google import genai
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 API_KEY = os.getenv("AIzaSyBypHzpWbmVCbQsWqYvem2jgU-9vOgkBBI")
 client = genai.Client(api_key=API_KEY)
 
-# ─── PAGE CONFIG ───
 st.set_page_config(
     page_title="MedSathi - AI Health Assistant",
     page_icon="🏥",
     layout="wide"
 )
 
-# ─── CSS + ANIMATIONS ───
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
-
 * { font-family: 'Poppins', sans-serif; }
-
-.stApp {
-    background: linear-gradient(135deg, #0a0a0a 0%, #0d1f0d 50%, #0a0a0a 100%);
-}
-
-/* ── Typing animation ── */
+.stApp { background: linear-gradient(135deg, #0a0a0a 0%, #0d1f0d 50%, #0a0a0a 100%); }
 .typing-title {
-    color: white;
-    font-size: 2.8rem;
-    font-weight: 800;
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 0 auto;
-    animation: typing 2.5s steps(8, end);
-    display: inline-block;
+    color: white; font-size: 2.8rem; font-weight: 800;
+    overflow: hidden; white-space: nowrap; margin: 0 auto;
+    animation: typing 2.5s steps(8, end); display: inline-block;
 }
-
-@keyframes typing {
-    from { width: 0; }
-    to   { width: 100%; }
-}
-@keyframes blink {
-    from, to { border-color: transparent; }
-    50%      { border-color: #2ecc71; }
-}
-
-/* ── Glowing header ── */
+@keyframes typing { from { width: 0; } to { width: 100%; } }
 .main-header {
     background: linear-gradient(135deg, #1a6b3c, #2ecc71);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    margin-bottom: 20px;
-    animation: glow 2s ease-in-out infinite alternate;
+    padding: 30px; border-radius: 20px; text-align: center;
+    margin-bottom: 20px; animation: glow 2s ease-in-out infinite alternate;
 }
 @keyframes glow {
     from { box-shadow: 0 0 20px rgba(46,204,113,0.3); }
     to   { box-shadow: 0 0 50px rgba(46,204,113,0.8); }
 }
 .main-header p { color: #d4f5e2; font-size: 0.95rem; margin: 5px 0 0 0; }
-
-/* ── Floating logo ── */
-.logo-float {
-    animation: float 3s ease-in-out infinite;
-    display: inline-block;
-    font-size: 3rem;
-}
+.logo-float { animation: float 3s ease-in-out infinite; display: inline-block; font-size: 3rem; }
 @keyframes float {
     0%   { transform: translateY(0px); }
     50%  { transform: translateY(-10px); }
     100% { transform: translateY(0px); }
 }
-
-/* ── Sidebar ── */
 div[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #071a07 0%, #0a0a0a 100%) !important;
     border-right: 1px solid rgba(46,204,113,0.3) !important;
 }
-.sidebar-logo {
-    text-align: center;
-    padding: 20px 0;
-}
-.sidebar-logo-icon {
-    font-size: 4rem;
-    animation: float 3s ease-in-out infinite, pulse-green 2s ease-in-out infinite;
-}
+.sidebar-logo { text-align: center; padding: 20px 0; }
+.sidebar-logo-icon { font-size: 4rem; animation: float 3s ease-in-out infinite, pulse-green 2s ease-in-out infinite; }
 @keyframes pulse-green {
     0%   { filter: drop-shadow(0 0 5px rgba(46,204,113,0.5)); }
     50%  { filter: drop-shadow(0 0 20px rgba(46,204,113,1)); }
     100% { filter: drop-shadow(0 0 5px rgba(46,204,113,0.5)); }
 }
 .sidebar-title {
-    color: #2ecc71;
-    font-size: 1.6rem;
-    font-weight: 800;
-    text-align: center;
-    margin: 5px 0;
+    color: #2ecc71; font-size: 1.6rem; font-weight: 800;
+    text-align: center; margin: 5px 0;
     animation: glow-text 2s ease-in-out infinite alternate;
 }
 @keyframes glow-text {
     from { text-shadow: 0 0 5px rgba(46,204,113,0.5); }
     to   { text-shadow: 0 0 20px rgba(46,204,113,1); }
 }
-.sidebar-subtitle {
-    color: #888;
-    font-size: 0.75rem;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-/* ── Stats boxes ── */
+.sidebar-subtitle { color: #888; font-size: 0.75rem; text-align: center; margin-bottom: 15px; }
 .stats-box {
     background: linear-gradient(135deg, rgba(46,204,113,0.1), rgba(26,107,60,0.2));
-    border: 1px solid rgba(46,204,113,0.4);
-    border-radius: 15px;
-    padding: 15px 10px;
-    text-align: center;
-    margin: 5px 0;
-    transition: all 0.3s ease;
+    border: 1px solid rgba(46,204,113,0.4); border-radius: 15px;
+    padding: 15px 10px; text-align: center; margin: 5px 0; transition: all 0.3s ease;
 }
-.stats-box:hover {
-    transform: translateY(-3px);
-    border-color: #2ecc71;
-    box-shadow: 0 5px 20px rgba(46,204,113,0.3);
-}
+.stats-box:hover { transform: translateY(-3px); border-color: #2ecc71; box-shadow: 0 5px 20px rgba(46,204,113,0.3); }
 .stats-number { color: #2ecc71; font-size: 2rem; font-weight: 700; }
 .stats-label  { color: #aaa; font-size: 0.72rem; margin-top: 2px; }
-
-/* ── Feature badges ── */
 .feature-badge {
-    background: rgba(46,204,113,0.1);
-    border: 1px solid rgba(46,204,113,0.3);
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    color: #2ecc71;
-    margin: 4px 2px;
-    display: inline-block;
+    background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 20px; padding: 6px 12px; font-size: 0.75rem;
+    color: #2ecc71; margin: 4px 2px; display: inline-block;
 }
-
-/* ── Emergency box ── */
 .emergency-box {
     background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(192,57,43,0.1));
-    border: 2px solid #e74c3c;
-    border-radius: 15px;
-    padding: 15px;
-    margin: 10px 0;
+    border: 2px solid #e74c3c; border-radius: 15px; padding: 15px; margin: 10px 0;
     animation: pulse-red 1.5s ease-in-out infinite;
 }
 @keyframes pulse-red {
@@ -154,70 +85,43 @@ div[data-testid="stSidebar"] {
     70%  { box-shadow: 0 0 0 10px rgba(231,76,60,0); }
     100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
 }
-
-/* ── Disclaimer ── */
 .disclaimer {
-    background: rgba(243,156,18,0.1);
-    border-left: 4px solid #f39c12;
-    padding: 12px 16px;
-    border-radius: 10px;
-    color: #f39c12;
-    font-size: 0.82rem;
-    margin-bottom: 15px;
+    background: rgba(243,156,18,0.1); border-left: 4px solid #f39c12;
+    padding: 12px 16px; border-radius: 10px; color: #f39c12;
+    font-size: 0.82rem; margin-bottom: 15px;
 }
-
-/* ── Buttons ── */
 .stButton > button {
     background: linear-gradient(135deg, #1a3a2a, #1e4d35) !important;
-    color: #2ecc71 !important;
-    border: 1px solid #2ecc71 !important;
-    border-radius: 25px !important;
-    padding: 8px 16px !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
+    color: #2ecc71 !important; border: 1px solid #2ecc71 !important;
+    border-radius: 25px !important; padding: 8px 16px !important;
+    font-size: 0.82rem !important; font-weight: 600 !important;
+    transition: all 0.3s ease !important; width: 100% !important;
 }
 .stButton > button:hover {
     background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
-    color: #000 !important;
-    transform: translateY(-2px) !important;
+    color: #000 !important; transform: translateY(-2px) !important;
     box-shadow: 0 5px 15px rgba(46,204,113,0.4) !important;
 }
-
-/* ── Chat ── */
 [data-testid="stChatMessage"] {
-    background: rgba(255,255,255,0.03) !important;
-    border-radius: 15px !important;
-    padding: 10px !important;
-    margin: 5px 0 !important;
+    background: rgba(255,255,255,0.03) !important; border-radius: 15px !important;
+    padding: 10px !important; margin: 5px 0 !important;
     border: 1px solid rgba(255,255,255,0.05) !important;
 }
 .stChatInput > div {
-    border: 2px solid #2ecc71 !important;
-    border-radius: 25px !important;
+    border: 2px solid #2ecc71 !important; border-radius: 25px !important;
     background: rgba(26,58,42,0.3) !important;
 }
 .stSelectbox > div > div {
     background: rgba(26,58,42,0.5) !important;
-    border: 1px solid #2ecc71 !important;
-    border-radius: 10px !important;
+    border: 1px solid #2ecc71 !important; border-radius: 10px !important;
 }
-
 .symptom-header { color: #2ecc71; font-size: 1rem; font-weight: 600; margin: 10px 0; }
-
-/* ── Progress bar ── */
 .powered-bar {
     background: linear-gradient(90deg, #1a6b3c, #2ecc71, #1a6b3c);
-    background-size: 200% auto;
-    height: 3px;
-    border-radius: 3px;
-    animation: shimmer 2s linear infinite;
-    margin: 10px 0;
+    background-size: 200% auto; height: 3px; border-radius: 3px;
+    animation: shimmer 2s linear infinite; margin: 10px 0;
 }
-@keyframes shimmer {
-    to { background-position: 200% center; }
-}
+@keyframes shimmer { to { background-position: 200% center; } }
 </style>
 """, unsafe_allow_html=True)
 
@@ -265,7 +169,7 @@ with st.sidebar:
     st.markdown("### ✨ Features")
     st.markdown("""
     <div>
-        <span class="feature-badge">🤖 Gemma 3 AI</span>
+        <span class="feature-badge">🤖 Gemma 4 AI</span>
         <span class="feature-badge">🌐 Bilingual</span>
         <span class="feature-badge">🚨 Emergency</span>
         <span class="feature-badge">⚡ Instant</span>
@@ -278,9 +182,9 @@ with st.sidebar:
     st.markdown("### ℹ️ About")
     st.markdown("""
     <small style='color:#888'>
-    MedSathi uses <b style='color:#2ecc71'>Gemma 3</b> by Google
+    MedSathi uses <b style='color:#2ecc71'>Gemma 4</b> by Google
     to provide health guidance to rural communities.<br><br>
-    Built for <b style='color:#2ecc71'>Gemma Impact Hackathon 2025</b>
+    Built for <b style='color:#2ecc71'>Gemma 4 Good Hackathon 2025</b>
     </small>
     """, unsafe_allow_html=True)
 
@@ -406,19 +310,16 @@ Never give confirmed diagnosis."""
 
         with st.spinner("MedSathi soch raha hai... 🤔"):
             response = client.models.generate_content(
-                model="gemma-3-4b-it",
+                model="gemma-4-26b-a4b-it",
                 contents=full_prompt
             )
-        
-        # Typing animation word by word
-        import time
+
         words = response.text.split(" ")
         for word in words:
             full_reply += word + " "
             message_placeholder.markdown(full_reply)
             time.sleep(0.05)
-        
-        # Final reply without cursor
+
         message_placeholder.markdown(full_reply)
 
     reply = full_reply
