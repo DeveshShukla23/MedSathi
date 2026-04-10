@@ -169,7 +169,7 @@ with st.sidebar:
     st.markdown("### ✨ Features")
     st.markdown("""
     <div>
-        <span class="feature-badge">🤖 Gemma 4 AI</span>
+        <span class="feature-badge">🤖 Gemma 3 AI</span>
         <span class="feature-badge">🌐 Bilingual</span>
         <span class="feature-badge">🚨 Emergency</span>
         <span class="feature-badge">⚡ Instant</span>
@@ -182,9 +182,9 @@ with st.sidebar:
     st.markdown("### ℹ️ About")
     st.markdown("""
     <small style='color:#888'>
-    MedSathi uses <b style='color:#2ecc71'>Gemma 4</b> by Google
+    MedSathi uses <b style='color:#2ecc71'>Gemma 3</b> by Google
     to provide health guidance to rural communities.<br><br>
-    Built for <b style='color:#2ecc71'>Gemma 4 Good Hackathon 2025</b>
+    Built for <b style='color:#2ecc71'>Gemma 3 Good Hackathon 2025</b>
     </small>
     """, unsafe_allow_html=True)
 
@@ -310,7 +310,7 @@ Never give confirmed diagnosis."""
 
         with st.spinner("MedSathi soch raha hai... 🤔"):
             response = client.models.generate_content(
-                model="gemma-4-26b-a4b-it",
+                model="gemma-3-4b-it",
                 contents=full_prompt
             )
 
